@@ -3,11 +3,13 @@
 import matplotlib.pyplot as plt
 import math
 
-# edge points of triangles A and B introduced in many different ways: 
+# edge points and centers of mass for triangles 
+# A and B introduced in various ways: 
 
 p1A = (2.0, 1.0)
 p2A = (-1.0, 1.0)
 p3A = (-1.0, -2.0)
+
 cmA = (0.0, 0.0)
 cmAx = 0.0 
 cmAy = 0.0
@@ -15,11 +17,12 @@ cmAy = 0.0
 p1B = (5.0, 3.0)
 p2B = (3.0, 4.0)
 p3B = (4.0, 2.0)
+
 cmB = (4.0, 3.0)
 cmBx = 4.0 
 cmBy = 3.0
 
-# other variables needed for calculations: 
+# general variables needed for calculations: 
 
 time = 0.0
 g = 9.81
@@ -32,7 +35,7 @@ e = 0.8
 
 VxcmA = 2.0
 VycmA = 7.0
-dotsAx = [cmAx]
+dotsAx = [cmAx] # Establishes a list of values
 dotsAy = [cmAy]
 
 VxcmB = -2.0
@@ -95,6 +98,7 @@ while (time < 3.0):
     y = y + w * dt
     time += dt
 
+# Plotting the lists and showing it
 plt.plot(dotsAx, dotsAy, 'o')
 plt.plot(dotsBx, dotsBy,'x')
 plt.show()
