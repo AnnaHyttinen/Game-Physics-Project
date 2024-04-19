@@ -69,7 +69,7 @@ while (time < 3.0):
     dotsAx.append(dotsAx[-1] + VxcmA * dt)
     dotsAy.append(dotsAy[-1] + VycmA * dt)
     
-    # an attempt to calculate and update the corners
+    # calculating and updating the corners
     for i in Ax:
         i = i*math.cos(y) - i*math.sin(y)
     for i in Ay:
