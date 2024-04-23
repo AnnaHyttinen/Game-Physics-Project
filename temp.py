@@ -5,13 +5,13 @@ import math
 
 # reference points introduced
 
-p1Ai = (2.0, 1.0)
-p2Ai = (-1.0, 1.0)
-p3Ai = (-1.0, -2.0)
+p1Ai = [2.0, 1.0]
+p2Ai = [-1.0, 1.0]
+p3Ai = [-1.0, -2.0]
 
-p1Bi = (1.0, 0.0)
-p2Bi = (-1.0, 1.0)
-p3Bi = (0.0, -1.0)
+p1Bi = [1.0, 0.0]
+p2Bi = [-1.0, 1.0]
+p3Bi = [0.0, -1.0]
 
 cmi = (0.0, 0.0)
 cmi = 0.0 
@@ -88,15 +88,16 @@ while (time < 3.0):
     dotsAy.append(dotsAy[-1] + VycmA * dt)
     
     # calculating and updating the corners
-    """Ax[0] = Ax[0]*math.cos(y) - Ax[0]*math.sin(y)
-    Ax[1] = Ax[1]*math.cos(y) - Ax[1]*math.sin(y)
-    Ax[2] = Ax[2]*math.cos(y) - Ax[2]*math.sin(y)
+    """Ax[0] = p1Ai[0]*math.cos(y) - p1Ai[1]*math.sin(y) + cmAx
+    Ax[1] = p2Ai[0]*math.cos(y) - p2Ai[1]*math.sin(y) + cmAx
+    Ax[2] = p3Ai[0]*math.cos(y) - p3Ai[1]*math.sin(y) + cmAx
     Ax[3] = Ax[0]
-
-    Ay[0] = Ay[0]*math.sin(y) + Ay[0]*math.cos(y)
-    Ay[1] = Ay[1]*math.sin(y) + Ay[1]*math.cos(y)
-    Ay[2] = Ay[2]*math.sin(y) + Ay[2]*math.cos(y)
-    Ax[3] = Ax[0]"""
+    
+    Ay[0] = p1Ai[0]*math.sin(y) + p1Ai[1]*math.cos(y) + cmAy
+    Ay[1] = p2Ai[0]*math.sin(y) + p2Ai[1]*math.cos(y) + cmAy
+    Ay[2] = p3Ai[0]*math.sin(y) + p3Ai[1]*math.cos(y) + cmAy
+    Ay[3] = Ay[0]"""
+    
     plt.plot(Ax, Ay)
     
     # Same for triangle B
