@@ -5,13 +5,13 @@ import math
 
 # reference points introduced
 
-p1Ai = [2.0, 1.0]
-p2Ai = [-1.0, 1.0]
-p3Ai = [-1.0, -2.0]
+p1Ai = [0.2, 0.1]
+p2Ai = [-0.1, 0.1]
+p3Ai = [-0.1, -0.2]
 
-p1Bi = [1.0, 0.0]
-p2Bi = [-1.0, 1.0]
-p3Bi = [0.0, -1.0]
+p1Bi = [0.25, 0.0]
+p2Bi = [-0.25, 0.25]
+p3Bi = [0.0, -0.25]
 
 cmi = (0.0, 0.0)
 cmi = 0.0 
@@ -36,8 +36,8 @@ y = 1.0 # greek alphabet that looks a bit like y
 w = 1.0 # greek alphabet that looks a bit like w (omega)
 e = 0.8
 m = 1.0 # just one mass, equal to both triangles
-IA = 1.5
-IB = 0.5
+IA = 0.15
+IB = 0.125
 
 # introducing components of velocity and tracks centers of masses
 
@@ -88,7 +88,7 @@ while (time < 3.0):
     dotsAy.append(dotsAy[-1] + VycmA * dt)
     
     # calculating and updating the corners
-    """Ax[0] = p1Ai[0]*math.cos(y) - p1Ai[1]*math.sin(y) + cmAx
+    Ax[0] = p1Ai[0]*math.cos(y) - p1Ai[1]*math.sin(y) + cmAx
     Ax[1] = p2Ai[0]*math.cos(y) - p2Ai[1]*math.sin(y) + cmAx
     Ax[2] = p3Ai[0]*math.cos(y) - p3Ai[1]*math.sin(y) + cmAx
     Ax[3] = Ax[0]
@@ -96,7 +96,7 @@ while (time < 3.0):
     Ay[0] = p1Ai[0]*math.sin(y) + p1Ai[1]*math.cos(y) + cmAy
     Ay[1] = p2Ai[0]*math.sin(y) + p2Ai[1]*math.cos(y) + cmAy
     Ay[2] = p3Ai[0]*math.sin(y) + p3Ai[1]*math.cos(y) + cmAy
-    Ay[3] = Ay[0]"""
+    Ay[3] = Ay[0]
     
     plt.plot(Ax, Ay)
     
