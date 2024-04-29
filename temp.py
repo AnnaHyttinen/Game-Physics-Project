@@ -132,3 +132,15 @@ plt.plot(dotsAx, dotsAy, 'o')
 plt.plot(dotsBx, dotsBy,'x')
 plt.gca().set_aspect('equal')
 plt.show()
+
+# Inserting Dot and Cross product functions
+
+def dot_product(v1, v2):
+    return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+
+def cross_product(v1, v2):
+    return [
+        v1[1] * v2[2] - v1[2] * v2[1],
+        v1[2] * v2[0] - v1[0] * v2[2],
+        v1[0] * v2[1] - v1[1] * v2[0]
+    ]
