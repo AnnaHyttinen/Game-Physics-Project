@@ -14,8 +14,8 @@ p2Bi = [-0.25, 0.25]
 p3Bi = [0.0, -0.25]
 
 cmi = (0.0, 0.0)
-cmi = 0.0 
-cmi = 0.0
+cmix = 0.0 
+cmiy = 0.0
 
 # starting points for centers of mass introduced (various ways)
 
@@ -36,6 +36,7 @@ y = 1.0 # greek alphabet that looks a bit like y
 w = 1.0 # greek alphabet that looks a bit like w (omega)
 e = 0.8
 m = 1.0 # just one mass, equal to both triangles
+n = [0, 1, 0]
 IA = 0.15
 IB = 0.125
 
@@ -144,3 +145,10 @@ def cross_product(v1, v2):
         v1[2] * v2[0] - v1[0] * v2[2],
         v1[0] * v2[1] - v1[1] * v2[0]
     ]
+
+# Calculate r for point p
+def r_calculator(p, cm):
+    a = p[0]-cm[0]
+    b = p[1]-cm[1]
+    return [a, b]
+    
