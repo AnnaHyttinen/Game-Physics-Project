@@ -38,7 +38,7 @@ y = 1.0 # greek alphabet that looks a bit like y
 w = [0.0, 0.0, 1.0] # (omega)
 e = 0.8
 m = 1.0 # just one mass, equal to both triangles
-n = [0.0, 1.0, 0.0]
+n = (0.0, 1.0, 0.0)
 IA = 0.15
 IB = 0.125
 
@@ -97,14 +97,17 @@ def r_calculator(p, cm):
     
 # Collision detection
 def collision_A(n):
+    global w
     for i in n:
         r = r_calculator(i, cmA)
         wr = cross_product(w, r)
         Vp = (VxcmA - wr[0], VycmA - wr[1])
-        print(i)
         if (Vp[1] >= 0.0 or i[1] > 0.0):
             return False
         else:
+            crossrn = cross_product(r, n)
+            J = -(1 + e)*(dot_product(Vp, n))/((1/m)+((crossrn)^2/IA))
+            w += J/IA * crossrn
             return True
     
 # calculations for movement: 
@@ -112,7 +115,6 @@ def collision_A(n):
 while (time < 3.0):
     if (collision_A(A) == True):
         VycmA += J/m
-        w += J/IA * cross_product(r, n)
     else:
         VycmA = VycmA - g * dt
     
