@@ -135,6 +135,12 @@ while (time < 3.0):
     
     plt.plot(Ax, Ay)
     
+    # A gets updated for the collision detection
+    A1 = (Ax[0], Ay[0])
+    A2 = (Ax[1], Ay[1])
+    A3 = (Ax[2], Ay[2])
+    A = (A1, A2, A3, A1)
+    
     # Same for triangle B
     
     if(dotsBy[-1] < 0 and VycmB < 0): # collision check for B
