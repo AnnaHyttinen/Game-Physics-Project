@@ -29,14 +29,16 @@ cmBy = 3.0
 
 # general variables needed for calculations
 
+r = (0.0, 0.0, 0.0)
+J = 0
 time = 0.0
 g = 9.81
 dt = 0.1
 y = 1.0 # greek alphabet that looks a bit like y
-w = 1.0 # greek alphabet that looks a bit like w (omega)
+w = [0.0, 0.0, 1.0] # (omega)
 e = 0.8
 m = 1.0 # just one mass, equal to both triangles
-n = [0, 1, 0]
+n = [0.0, 1.0, 0.0]
 IA = 0.15
 IB = 0.125
 
@@ -74,14 +76,46 @@ By = [p[1] for p in B]
 cornersBx = [Bx]
 cornersBy = [By]
 
+# Inserting functions
+
+def dot_product(v1, v2):
+    return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+
+def cross_product(v1, v2):
+    return [
+        v1[1] * v2[2] - v1[2] * v2[1],
+        v1[2] * v2[0] - v1[0] * v2[2],
+        v1[0] * v2[1] - v1[1] * v2[0]
+    ]
+
+# Calculate r for point p
+def r_calculator(p, cm):
+    a = p[0]-cm[0]
+    b = p[1]-cm[1]
+    c = 0.0
+    return (a, b, c)
+    
+# Collision detection
+def collision_A(n):
+    for i in n:
+        r = r_calculator(i, cmA)
+        wr = cross_product(w, r)
+        Vp = (VxcmA - wr[0], VycmA - wr[1])
+        print(i)
+        if (Vp[1] >= 0.0 or i[1] > 0.0):
+            return False
+        else:
+            return True
+    
 # calculations for movement: 
 
 while (time < 3.0):
-    if(dotsAy[-1] < 0 and VycmA < 0): # collision check for A
-        VycmA = -e * VycmA # turning the direction of force at floor
+    if (collision_A(A) == True):
+        VycmA += J/m
+        w += J/IA * cross_product(r, n)
     else:
-        VycmA = VycmA - g * dt # continuing the ordinary way
-        
+        VycmA = VycmA - g * dt
+    
     # calculating and updating the center of mass
     cmAx = cmAx + VxcmA * dt
     cmAy = cmAy + VycmA * dt
@@ -125,7 +159,7 @@ while (time < 3.0):
     plt.plot(Bx, By)
     
     # updating the other variables: 
-    y = y + w * dt
+    y = y + w[2] * dt
     time += dt
 
 # Plotting the lists and showing it
@@ -134,21 +168,7 @@ plt.plot(dotsBx, dotsBy,'x')
 plt.gca().set_aspect('equal')
 plt.show()
 
-# Inserting Dot and Cross product functions
-
-def dot_product(v1, v2):
-    return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
-
-def cross_product(v1, v2):
-    return [
-        v1[1] * v2[2] - v1[2] * v2[1],
-        v1[2] * v2[0] - v1[0] * v2[2],
-        v1[0] * v2[1] - v1[1] * v2[0]
-    ]
-
-# Calculate r for point p
-def r_calculator(p, cm):
-    a = p[0]-cm[0]
-    b = p[1]-cm[1]
-    return [a, b]
+    
+    
+    
     
