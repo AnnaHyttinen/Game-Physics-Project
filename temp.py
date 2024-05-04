@@ -97,30 +97,41 @@ def r_calculator(p, cm):
     return (a, b, c)
     
 # Collision detection
+collides = False
+Vp = None
+r = None
 def collision_A(triangle):
     global w
+    global VxcmA
     global VycmA
+    global collides
+    global Vp
+    global r
     for i in triangle:
-        print(i)
-        r = r_calculator(i, cmA)
-        wr = cross_product(w, r)
-        Vp = (VxcmA - wr[0], VycmA - wr[1], 0.0)
-        if (Vp[1] >= 0.0 or i[1] > 0.0):
-            VycmA = VycmA - g * dt
-        else:
-            crossrn = cross_product(r, n)
-            crossrn2 = crossrn[2]*crossrn[2]
-            dotVpn = dot_product(Vp, n)
-            J = -(1+e)*dotVpn/(((1/m)+crossrn2)/IA)
-            VycmA += J/m
-            w[2] += J/IA * crossrn[2]
-            return
+        if(collides == False):
+            r = r_calculator(i, cmA)
+            wr = cross_product(w, r)
+            Vp = (VxcmA - wr[0], VycmA - wr[1], 0.0)
+        if (Vp[1] < 0.0 and i[1] < 0.0):
+            collides = True
+            break
     
 # calculations for movement: 
 
 while (time < 3.0):
     collision_A(A)
-        
+    if(collides == False):
+        VycmA = VycmA - g * dt
+    else:
+        print("Impact is calculated")
+        crossrn = cross_product(r, n)
+        crossrn2 = crossrn[2]*crossrn[2]
+        dotVpn = dot_product(Vp, n)
+        J = -(1+e)*dotVpn/(((1/m)+crossrn2)/IA)
+        VycmA += J/m
+        w[2] += J/IA * crossrn[2]
+        collides = False
+
     # calculating and updating the center of mass
     cmAx = cmAx + VxcmA * dt
     cmAy = cmAy + VycmA * dt
