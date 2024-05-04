@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
+import numpy as np
 import math
 
 # reference points introduced
@@ -96,28 +97,30 @@ def r_calculator(p, cm):
     return (a, b, c)
     
 # Collision detection
-def collision_A(n):
+def collision_A(triangle):
     global w
-    for i in n:
+    global VycmA
+    for i in triangle:
+        print(i)
         r = r_calculator(i, cmA)
         wr = cross_product(w, r)
-        Vp = (VxcmA - wr[0], VycmA - wr[1])
+        Vp = (VxcmA - wr[0], VycmA - wr[1], 0.0)
         if (Vp[1] >= 0.0 or i[1] > 0.0):
-            return False
+            VycmA = VycmA - g * dt
         else:
             crossrn = cross_product(r, n)
-            J = -(1 + e)*(dot_product(Vp, n))/((1/m)+((crossrn)^2/IA))
-            w += J/IA * crossrn
-            return True
+            crossrn2 = crossrn[2]*crossrn[2]
+            dotVpn = dot_product(Vp, n)
+            J = -(1+e)*dotVpn/(((1/m)+crossrn2)/IA)
+            VycmA += J/m
+            w[2] += J/IA * crossrn[2]
+            return
     
 # calculations for movement: 
 
 while (time < 3.0):
-    if (collision_A(A) == True):
-        VycmA += J/m
-    else:
-        VycmA = VycmA - g * dt
-    
+    collision_A(A)
+        
     # calculating and updating the center of mass
     cmAx = cmAx + VxcmA * dt
     cmAy = cmAy + VycmA * dt
