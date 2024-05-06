@@ -34,9 +34,9 @@ r = (0.0, 0.0, 0.0)
 J = 0
 time = 0.0
 g = 9.81
-dt = 0.2
+dt = 0.03
 y = 1.0 # greek alphabet that looks a bit like y
-w = [0.0, 0.0, 1.0] # (omega)
+w = [0.0, 0.0, 1.75] # (omega)
 e = 0.8
 m = 1.0 # just one mass, equal to both triangles
 n = (0.0, 1.0, 0.0)
@@ -119,7 +119,7 @@ def collision_A(triangle):
     
 # calculations for movement: 
 
-while (time < 2.7):
+while (time < 2.75):
     
     # collision detection
     collision_A(A)
@@ -131,6 +131,7 @@ while (time < 2.7):
         dotVpn = dot_product(Vp, n)
         J = -(1+e)*dotVpn/(((1/m)+crossrn2)/IA)
         VycmA += J/m
+        VycmA = -VycmA
         w[2] += J/IA * crossrn[2]
 
     # calculating and updating the center of mass
@@ -186,7 +187,7 @@ while (time < 2.7):
     time += dt
 
 # Plotting the lists and showing it
-plt.plot(dotsAx, dotsAy, 'o')
+# plt.plot(dotsAx, dotsAy, 'o')
 plt.plot(dotsBx, dotsBy,'x')
 plt.gca().set_aspect('equal')
 plt.show()
