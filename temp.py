@@ -140,18 +140,20 @@ def collision_B(triangle):
 
 def collision_triangles(t1, t2):
     first1 = None
-    # going through all sides of t1
+    # going through all sides of t1 for collision with t2
     if (first1 == None):
         first1 = t1[0]
     else:
         for i in t1:
             rii1 = ((i[0]-t1[0]),(i[1]-t1[1]))
-            rip = None
-            if(cross_product(rii1, rip)>0):
-                print("Find the nearest polygon side i->i+1!")
-                n_coll = (cross_product(rii1, k))
-                print("Slide 11 onward")
-    # going through all sides of t2
+            for i in t2:
+                rip = ((i[0]-t1[0]),(i[1]-t1[1]))
+                if(cross_product(rii1, rip)>0):
+                    print("Find the nearest polygon side i->i+1!")
+                    n_coll = (cross_product(rii1, k))
+                    print("Slide 11 onward")
+                    break
+    # going through all sides of t2 for collision with t1
 
 # calculations for movement: 
 
