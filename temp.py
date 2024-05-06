@@ -34,7 +34,7 @@ r = (0.0, 0.0, 0.0)
 J = 0
 time = 0.0
 g = 9.81
-dt = 0.1
+dt = 0.2
 y = 1.0 # greek alphabet that looks a bit like y
 w = [0.0, 0.0, 1.0] # (omega)
 e = 0.8
@@ -108,29 +108,30 @@ def collision_A(triangle):
     global Vp
     global r
     for i in triangle:
-        if(collides == False):
-            r = r_calculator(i, cmA)
-            wr = cross_product(w, r)
-            Vp = (VxcmA - wr[0], VycmA - wr[1], 0.0)
+        r = r_calculator(i, cmA)
+        wr = cross_product(w, r)
+        Vp = (VxcmA - wr[0], VycmA - wr[1], 0.0)
         if (Vp[1] < 0.0 and i[1] < 0.0):
             collides = True
             break
+        else:
+            collides = False
     
 # calculations for movement: 
 
-while (time < 3.0):
+while (time < 2.7):
+    
+    # collision detection
     collision_A(A)
     if(collides == False):
         VycmA = VycmA - g * dt
     else:
-        print("Impact is calculated")
         crossrn = cross_product(r, n)
         crossrn2 = crossrn[2]*crossrn[2]
         dotVpn = dot_product(Vp, n)
         J = -(1+e)*dotVpn/(((1/m)+crossrn2)/IA)
         VycmA += J/m
         w[2] += J/IA * crossrn[2]
-        collides = False
 
     # calculating and updating the center of mass
     cmAx = cmAx + VxcmA * dt
