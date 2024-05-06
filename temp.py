@@ -35,18 +35,21 @@ J = 0
 time = 0.0
 g = 9.81
 dt = 0.03
-y = 1.0 # greek alphabet that looks a bit like y
-w = [0.0, 0.0, 1.75] # (omega)
+yA = 1.0 # greek alphabet that looks a bit like y
+yB = 1.5
+wA = [0.0, 0.0, 1.75] # (omega)
+wB = [0.0, 0.0, 1.5]
 e = 0.8
 m = 1.0 # just one mass, equal to both triangles
 n = (0.0, 1.0, 0.0)
 IA = 0.15
 IB = 0.125
+k = [0.0, 0.0, 1.0]
 
 # introducing components of velocity and tracks centers of masses
 
 VxcmA = 2.0
-VycmA = 7.0
+VycmA = 3.0
 dotsAx = [cmAx] # Establishes a list of values
 dotsAy = [cmAy]
 
@@ -97,33 +100,66 @@ def r_calculator(p, cm):
     return (a, b, c)
     
 # Collision detection
-collides = False
+A_collides = False
+B_collides = False
 Vp = None
 r = None
 def collision_A(triangle):
-    global w
+    global wA
     global VxcmA
     global VycmA
-    global collides
+    global A_collides
     global Vp
     global r
     for i in triangle:
         r = r_calculator(i, cmA)
-        wr = cross_product(w, r)
+        wr = cross_product(wA, r)
         Vp = (VxcmA - wr[0], VycmA - wr[1], 0.0)
         if (Vp[1] < 0.0 and i[1] < 0.0):
-            collides = True
+            A_collides = True
             break
         else:
-            collides = False
-    
+            A_collides = False
+            
+def collision_B(triangle):
+    global wB
+    global VxcmB
+    global VycmB
+    global B_collides
+    global Vp
+    global r
+    for i in triangle:
+        r = r_calculator(i, cmB)
+        wr = cross_product(wB, r)
+        Vp = (VxcmB - wr[0], VycmB - wr[1], 0.0)
+        if (Vp[1] < 0.0 and i[1] < 0.0):
+            B_collides = True
+            break
+        else:
+            B_collides = False
+
+def collision_triangles(t1, t2):
+    first1 = None
+    # going through all sides of t1
+    if (first1 == None):
+        first1 = t1[0]
+    else:
+        for i in t1:
+            rii1 = ((i[0]-t1[0]),(i[1]-t1[1]))
+            rip = None
+            if(cross_product(rii1, rip)>0):
+                print("Find the nearest polygon side i->i+1!")
+                n_coll = (cross_product(rii1, k))
+                print("Slide 11 onward")
+    # going through all sides of t2
+
 # calculations for movement: 
 
-while (time < 2.75):
+while (time < 1.25):
     
     # collision detection
     collision_A(A)
-    if(collides == False):
+    if(A_collides == False):
         VycmA = VycmA - g * dt
     else:
         crossrn = cross_product(r, n)
@@ -132,7 +168,7 @@ while (time < 2.75):
         J = -(1+e)*dotVpn/(((1/m)+crossrn2)/IA)
         VycmA += J/m
         VycmA = -VycmA
-        w[2] += J/IA * crossrn[2]
+        wA[2] += J/IA * crossrn[2]
 
     # calculating and updating the center of mass
     cmAx = cmAx + VxcmA * dt
@@ -141,14 +177,14 @@ while (time < 2.75):
     dotsAy.append(dotsAy[-1] + VycmA * dt)
     
     # calculating and updating the corners
-    Ax[0] = p1Ai[0]*math.cos(y) - p1Ai[1]*math.sin(y) + cmAx
-    Ax[1] = p2Ai[0]*math.cos(y) - p2Ai[1]*math.sin(y) + cmAx
-    Ax[2] = p3Ai[0]*math.cos(y) - p3Ai[1]*math.sin(y) + cmAx
+    Ax[0] = p1Ai[0]*math.cos(yA) - p1Ai[1]*math.sin(yA) + cmAx
+    Ax[1] = p2Ai[0]*math.cos(yA) - p2Ai[1]*math.sin(yA) + cmAx
+    Ax[2] = p3Ai[0]*math.cos(yA) - p3Ai[1]*math.sin(yA) + cmAx
     Ax[3] = Ax[0]
     
-    Ay[0] = p1Ai[0]*math.sin(y) + p1Ai[1]*math.cos(y) + cmAy
-    Ay[1] = p2Ai[0]*math.sin(y) + p2Ai[1]*math.cos(y) + cmAy
-    Ay[2] = p3Ai[0]*math.sin(y) + p3Ai[1]*math.cos(y) + cmAy
+    Ay[0] = p1Ai[0]*math.sin(yA) + p1Ai[1]*math.cos(yA) + cmAy
+    Ay[1] = p2Ai[0]*math.sin(yA) + p2Ai[1]*math.cos(yA) + cmAy
+    Ay[2] = p3Ai[0]*math.sin(yA) + p3Ai[1]*math.cos(yA) + cmAy
     Ay[3] = Ay[0]
     
     plt.plot(Ax, Ay)
@@ -161,34 +197,52 @@ while (time < 2.75):
     
     # Same for triangle B
     
-    if(dotsBy[-1] < 0 and VycmB < 0): # collision check for B
-        VycmB = -e * VycmB
-    else:
+    collision_B(B)
+    if(B_collides == False):
         VycmB = VycmB - g * dt
-    
+    else:
+        crossrn = cross_product(r, n)
+        crossrn2 = crossrn[2]*crossrn[2]
+        dotVpn = dot_product(Vp, n)
+        J = -(1+e)*dotVpn/(((1/m)+crossrn2)/IB)
+        VycmB += J/m
+        VycmB = -VycmB
+        wB[2] += J/IB * crossrn[2]
+
+    # calculating and updating the center of mass
     cmBx = cmBx + VxcmB * dt
     cmBy = cmBy + VycmB * dt
     dotsBx.append(dotsBx[-1] + VxcmB * dt)
     dotsBy.append(dotsBy[-1] + VycmB * dt)
-
-    """Bx[0] = Bx[0]*math.cos(y) - Bx[0]*math.sin(y)
-    Bx[1] = Bx[1]*math.cos(y) - Bx[1]*math.sin(y)
-    Bx[2] = Bx[2]*math.cos(y) - Bx[2]*math.sin(y)
+    
+    # calculating and updating the corners
+    Bx[0] = p1Bi[0]*math.cos(yB) - p1Bi[1]*math.sin(yB) + cmBx
+    Bx[1] = p2Bi[0]*math.cos(yB) - p2Bi[1]*math.sin(yB) + cmBx
+    Bx[2] = p3Bi[0]*math.cos(yB) - p3Bi[1]*math.sin(yB) + cmBx
     Bx[3] = Bx[0]
-
-    By[0] = By[0]*math.sin(y) + By[0]*math.cos(y)
-    By[1] = By[1]*math.sin(y) + By[1]*math.cos(y)
-    By[2] = By[2]*math.sin(y) + By[2]*math.cos(y)
-    Bx[3] = Bx[0]"""
+    
+    By[0] = p1Bi[0]*math.sin(yB) + p1Bi[1]*math.cos(yB) + cmBy
+    By[1] = p2Bi[0]*math.sin(yB) + p2Bi[1]*math.cos(yB) + cmBy
+    By[2] = p3Bi[0]*math.sin(yB) + p3Bi[1]*math.cos(yB) + cmBy
+    By[3] = By[0]
+    
     plt.plot(Bx, By)
     
-    # updating the other variables: 
-    y = y + w[2] * dt
+    # B gets updated for the collision detection
+    B1 = (Bx[0], By[0])
+    B2 = (Bx[1], By[1])
+    B3 = (Bx[2], By[2])
+    B = (B1, B2, B3, B1)
+    
+    # updating values for time and y: 
+    yA = yA + wA[2] * dt
+    yB = yB + wB[2] * dt
     time += dt
+    
+    # The triangles collision attempt
+    collision_triangles(A, B)
 
-# Plotting the lists and showing it
-# plt.plot(dotsAx, dotsAy, 'o')
-plt.plot(dotsBx, dotsBy,'x')
+# Showing the result
 plt.gca().set_aspect('equal')
 plt.show()
 
