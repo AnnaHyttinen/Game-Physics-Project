@@ -34,7 +34,7 @@ r = (0.0, 0.0, 0.0)
 J = 0
 time = 0.0
 g = 9.81
-dt = 0.03
+dt = 0.05
 yA = 1.0 # greek alphabet that looks a bit like y
 yB = 1.5
 wA = [0.0, 0.0, 1.75] # (omega)
@@ -49,7 +49,7 @@ k = [0.0, 0.0, 1.0]
 # introducing components of velocity and tracks centers of masses
 
 VxcmA = 2.0
-VycmA = 3.0
+VycmA = 4.0
 dotsAx = [cmAx] # Establishes a list of values
 dotsAy = [cmAy]
 
@@ -139,25 +139,33 @@ def collision_B(triangle):
             B_collides = False
 
 def collision_triangles(t1, t2):
-    first1 = None
+    previous = None
     # going through all sides of t1 for collision with t2
-    if (first1 == None):
-        first1 = t1[0]
+    if (previous == None):
+        previous = t1[0]
     else:
-        for i in t1:
-            rii1 = ((i[0]-t1[0]),(i[1]-t1[1]))
-            for i in t2:
-                rip = ((i[0]-t1[0]),(i[1]-t1[1]))
+        for i in t1: # i is a point of a side
+            pre_x = previous[0]
+            pre_y = previous[1]
+            curr_x = i[0]
+            curr_y = i[1]
+            rii1 = ((curr_x-pre_x),(curr_y-pre_y))
+            for i in t2: # i is a point of another triangle
+                xp = i[0]
+                yp = i[1]
+                rip = ((xp-pre_x),(yp-pre_y))
                 if(cross_product(rii1, rip)>0):
                     print("Find the nearest polygon side i->i+1!")
                     n_coll = (cross_product(rii1, k))
                     print("Slide 11 onward")
                     break
-    # going through all sides of t2 for collision with t1
 
 # calculations for movement: 
 
-while (time < 1.25):
+while (time < 1.0):
+    # triangles colliding together detection
+    collision_triangles(A, B)
+    collision_triangles(B, A)
     
     # collision detection
     collision_A(A)
