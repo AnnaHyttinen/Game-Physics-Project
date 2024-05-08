@@ -39,7 +39,8 @@ yB = 1.5
 wA = [0.0, 0.0, 1.75] # (omega)
 wB = [0.0, 0.0, 1.5]
 e = 0.8
-m = 1.0 # just one mass, equal to both triangles
+mA = 1.0
+mB = 1.0
 n = (0.0, 1.0, 0.0)
 IA = 0.15
 IB = 0.125
@@ -158,7 +159,7 @@ def distance(x, y, t): # triangle collision system uses this to find a distance
     return s
 
 previous = None
-def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa):
+def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
     global previous
     # going through all sides of t1 for collision with t2
     if (previous == None):
@@ -188,32 +189,31 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa):
                     # point velocities of both polygons at P
                     rap = r_calculator(i, A)
                     rbp = r_calculator(i, B)
-                    
-                    Vap = Va + cross_product(wa, rap)
-                    Vbp = Vb + cross_product(wb, rbp)
-                    Vab = Vap - Vbp
+
+                    Vap = (Va[0] + cross_product(wa, rap)[0])+(Va[1] + cross_product(wa, rap)[1])
+                    Vbp = (Vb[0] + cross_product(wb, rbp)[0])+(Vb[1] + cross_product(wb, rbp)[1])
+                    Vab = ((Vap - Vbp), 0.0, 0.0)
                     Vabn = dot_product(Vab, n_coll)
                     
                     if (Vabn < 0):
-                        return True
+                        # calculate impulse
+                        rapn2 = (cross_product(rap, n_coll)[2])*(cross_product(rap, n_coll)[2])
+                        J = -(1+e)*(dot_product(Vab, n_coll))/((1/ma)+(1/mb)+(rapn2/IA))
+                        # update cm velocities
+                        # update angular velocities
+                        # positional update for both polygons
                         break
 
 # calculations for movement: 
 
 while (time < 1.0):
     # triangles colliding together detection
-    if(collision_triangles(A, B, (VxcmA, VycmA), (VxcmB, VycmB), (cmAx, cmAy), 
-                           (cmBx, cmBy), wA, wB)==True):
-        # calculate impulse
-        # update cm velocities
-        # update angular velocities
-        # positional update for both polygons
-    if(collision_triangles(B, A, (VxcmB, VycmB), (VxcmA, VycmA), (cmBx, cmBy), 
-                           (cmAx, cmAy), wB, wA)==True):
-        # calculate impulse
-        # update cm velocities
-        # update angular velocities
-        # positional update for both polygons
+    VA = (VxcmA, VycmA)
+    VB = (VxcmB, VycmB)
+    CMA = (cmAx, cmAy)
+    CMB = (cmBx, cmBy)
+    collision_triangles(A, B, VA, VB, CMA, CMB, wA, wB, mA, mB)
+    collision_triangles(B, A, VB, VA, CMB, CMA, wB, wA, mB, mA)
     
     # collision detection
     collision_A(A)
@@ -223,8 +223,8 @@ while (time < 1.0):
         crossrn = cross_product(r, n)
         crossrn2 = crossrn[2]*crossrn[2]
         dotVpn = dot_product(Vp, n)
-        J = -(1+e)*dotVpn/(((1/m)+crossrn2)/IA)
-        VycmA += J/m
+        J = -(1+e)*dotVpn/(((1/mA)+crossrn2)/IA)
+        VycmA += J/mA
         VycmA = -VycmA
         wA[2] += J/IA * crossrn[2]
 
@@ -262,8 +262,8 @@ while (time < 1.0):
         crossrn = cross_product(r, n)
         crossrn2 = crossrn[2]*crossrn[2]
         dotVpn = dot_product(Vp, n)
-        J = -(1+e)*dotVpn/(((1/m)+crossrn2)/IB)
-        VycmB += J/m
+        J = -(1+e)*dotVpn/(((1/mB)+crossrn2)/IB)
+        VycmB += J/mB
         VycmB = -VycmB
         wB[2] += J/IB * crossrn[2]
 
@@ -296,15 +296,7 @@ while (time < 1.0):
     yA = yA + wA[2] * dt
     yB = yB + wB[2] * dt
     time += dt
-    
-    # The triangles collision attempt
-    collision_triangles(A, B)
 
 # Showing the result
 plt.gca().set_aspect('equal')
 plt.show()
-
-    
-    
-    
-    
