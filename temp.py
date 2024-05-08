@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
-import numpy as np
 import math
 
 # reference points introduced
@@ -138,26 +137,38 @@ def collision_B(triangle):
         else:
             B_collides = False
 
+def distance(y, x, t): # triangle collision system uses this to find the distance
+    dist = 0.0
+    for i in t:
+        dist0 = abs()
+previous = None
 def collision_triangles(t1, t2):
-    previous = None
+    global previous
     # going through all sides of t1 for collision with t2
     if (previous == None):
-        previous = t1[0]
+        previous = t1[0] # i in notes, a point of a side
     else:
-        for i in t1: # i is a point of a side
+        for i in t1: # i is another point of a side
             pre_x = previous[0]
             pre_y = previous[1]
             curr_x = i[0]
             curr_y = i[1]
-            rii1 = ((curr_x-pre_x),(curr_y-pre_y))
-            for i in t2: # i is a point of another triangle
+            rii1 = ((curr_x-pre_x), (curr_y-pre_y), 0.0)
+            for i in t2: # i is a point of other triangle
                 xp = i[0]
                 yp = i[1]
-                rip = ((xp-pre_x),(yp-pre_y))
-                if(cross_product(rii1, rip)>0):
-                    print("Find the nearest polygon side i->i+1!")
-                    n_coll = (cross_product(rii1, k))
-                    print("Slide 11 onward")
+                rip = ((xp-pre_x), (yp-pre_y), 0.0)
+                rii1xrip = cross_product(rii1, rip)
+                if(rii1xrip[2] > 0): # if a point is inside the other polygon
+                    # find the nearest polygon side i->i+1!
+                    side = distance(xp, yp, t1)
+                    
+                    side2x = side[0]*side[0]
+                    side2y = side[1]*side[1]
+                    upper = cross_product(side, k)
+                    lower = math.sqrt(side2x+side2y)
+                    n_coll = ((upper[0]/lower), (upper[1]/lower), (upper[2]/lower))
+                    
                     break
 
 # calculations for movement: 
