@@ -199,11 +199,14 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
                         # calculate impulse
                         rapn2 = (cross_product(rap, n_coll)[2])*(cross_product(rap, n_coll)[2])
                         J = -(1+e)*(dot_product(Vab, n_coll))/((1/ma)+(1/mb)+(rapn2/IA))
+
+                        Vaf = ((Va[0] + J/ma * n_coll[0]),(Va[1]) + J/ma * n_coll[1])
+                        Vbf = ((Vb[0] + J/mb * n_coll[0]),(Vb[1] + J/mb * n_coll[1]))
                         
-                        Vaf = Va + J/ma * n_coll[2]
-                        Vbf = Vb + J/mb * n_coll[2]
-                        waf = wa - J/IA * cross_product(rap, n_coll)
-                        wbf = wb + J/IB * cross_product(rbp, n_coll)
+                        crosstempA = wa[2] - J/IA * cross_product(rap, n_coll)[2]
+                        crosstempB = wb[2] + J/IB * cross_product(rbp, n_coll)[2]
+                        waf = (0.0, 0.0, crosstempA)
+                        wbf = (0.0, 0.0, crosstempB)
                         
                         if(t1 == 'A'):
                             VxcmA = Vbf[0]
