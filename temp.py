@@ -199,8 +199,29 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
                         # calculate impulse
                         rapn2 = (cross_product(rap, n_coll)[2])*(cross_product(rap, n_coll)[2])
                         J = -(1+e)*(dot_product(Vab, n_coll))/((1/ma)+(1/mb)+(rapn2/IA))
-                        # update cm velocities
-                        # update angular velocities
+                        
+                        Vaf = Va + J/ma * n_coll[2]
+                        Vbf = Vb + J/mb * n_coll[2]
+                        waf = wa - J/IA * cross_product(rap, n_coll)
+                        wbf = wb + J/IB * cross_product(rbp, n_coll)
+                        
+                        if(t1 == 'A'):
+                            VxcmA = Vbf[0]
+                            VycmA = Vbf[1]
+                            VxcmB = Vaf[0]
+                            VycmB = Vaf[1]
+                            wA = wbf
+                            wB = waf
+                        else:
+                            VxcmA = Vaf[0]
+                            VycmA = Vaf[1]
+                            VxcmB = Vbf[0]
+                            VycmB = Vbf[1]
+                            wA = waf
+                            wB = wbf                            
+
+                        # updated cm velocities
+                        # updated angular velocities
                         # positional update for both polygons
                         break
 
