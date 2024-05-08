@@ -33,7 +33,7 @@ r = (0.0, 0.0, 0.0)
 J = 0
 time = 0.0
 g = 9.81
-dt = 0.05
+dt = 0.03
 yA = 1.0 # greek alphabet that looks a bit like y
 yB = 1.5
 wA = [0.0, 0.0, 1.75] # (omega)
@@ -137,12 +137,28 @@ def collision_B(triangle):
         else:
             B_collides = False
 
-def distance(y, x, t): # triangle collision system uses this to find the distance
+def distance(x, y, t): # triangle collision system uses this to find a distance
     dist = 0.0
+    s = None
+    previ = None
     for i in t:
-        dist0 = abs()
+        if (previ == None):
+            previ = i
+        else:
+            up = (i[0]-previ[0])*(y-previ[1]) - (x-previ[0])*(i[1]-previ[1])
+            first2 = (i[0]-previ[0])*(i[0]-previ[0])
+            second2 = (i[1]-previ[1])*(i[1]-previ[1])
+            down = math.sqrt(first2+second2)
+            if(down == 0):
+                down = 0.0000000001
+            dist0 = abs(up/down)
+            if (dist0 > dist):
+                dist = dist0
+                s = (i[0], i[1], 0.0)
+    return s
+
 previous = None
-def collision_triangles(t1, t2):
+def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa):
     global previous
     # going through all sides of t1 for collision with t2
     if (previous == None):
@@ -163,20 +179,41 @@ def collision_triangles(t1, t2):
                     # find the nearest polygon side i->i+1!
                     side = distance(xp, yp, t1)
                     
-                    side2x = side[0]*side[0]
-                    side2y = side[1]*side[1]
+                    side2x = (side[0])*(side[0])
+                    side2y = (side[1])*(side[1])
                     upper = cross_product(side, k)
                     lower = math.sqrt(side2x+side2y)
                     n_coll = ((upper[0]/lower), (upper[1]/lower), (upper[2]/lower))
                     
-                    break
+                    # point velocities of both polygons at P
+                    rap = r_calculator(i, A)
+                    rbp = r_calculator(i, B)
+                    
+                    Vap = Va + cross_product(wa, rap)
+                    Vbp = Vb + cross_product(wb, rbp)
+                    Vab = Vap - Vbp
+                    Vabn = dot_product(Vab, n_coll)
+                    
+                    if (Vabn < 0):
+                        return True
+                        break
 
 # calculations for movement: 
 
 while (time < 1.0):
     # triangles colliding together detection
-    collision_triangles(A, B)
-    collision_triangles(B, A)
+    if(collision_triangles(A, B, (VxcmA, VycmA), (VxcmB, VycmB), (cmAx, cmAy), 
+                           (cmBx, cmBy), wA, wB)==True):
+        # calculate impulse
+        # update cm velocities
+        # update angular velocities
+        # positional update for both polygons
+    if(collision_triangles(B, A, (VxcmB, VycmB), (VxcmA, VycmA), (cmBx, cmBy), 
+                           (cmAx, cmAy), wB, wA)==True):
+        # calculate impulse
+        # update cm velocities
+        # update angular velocities
+        # positional update for both polygons
     
     # collision detection
     collision_A(A)
