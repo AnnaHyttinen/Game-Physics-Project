@@ -191,14 +191,16 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
             rii1 = ((curr_x-pre_x), (curr_y-pre_y), 0.0) # defines a side
             for i in t2: # i is a point of the other triangle
                 in_count = 0
+                count = 0
                 xp = i[0]
                 yp = i[1]
                 rip = ((xp-pre_x), (yp-pre_y), 0.0) # defines point compared to point of side
-                print(rip)
                 rii1xrip = cross_product(rii1, rip)
                 if(rii1xrip[2] > 0): 
                     in_count += 1
-                if (in_count == 4):                   
+                print(count)
+                count += 1
+                if (in_count == 3):                   
                     # point is inside the other polygon
                     print("point is found inside")
                     in_count = 0
@@ -263,7 +265,7 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
 
 # calculations for movement: 
 
-while (time < 0.93):
+while (time < 1.5):
     # triangle collision detection
     VA = (VxcmA, VycmA)
     VB = (VxcmB, VycmB)
