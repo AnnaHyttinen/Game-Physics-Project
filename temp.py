@@ -33,7 +33,7 @@ r = (0.0, 0.0, 0.0)
 J = 0
 time = 0.0
 g = 9.81
-dt = 0.04
+dt = 0.02
 yA = 1.0 # greek alphabet that looks a bit like y
 yB = 1.5
 wA = [0.0, 0.0, 1.75] # (omega)
@@ -161,6 +161,12 @@ def distance(x, y, t): # triangle collision system uses this to find a distance
 previous = None
 def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
     global previous
+    global wA
+    global wB
+    global VxcmA
+    global VycmA
+    global VxcmB
+    global VycmB
     # going through all sides of t1 for collision with t2
     if (previous == None):
         previous = t1[0] # i in notes, a point of a side
@@ -177,6 +183,7 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
                 rip = ((xp-pre_x), (yp-pre_y), 0.0)
                 rii1xrip = cross_product(rii1, rip)
                 if(rii1xrip[2] > 0): # if a point is inside the other polygon
+                    print("point is found inside")
                     # find the nearest polygon side i->i+1!
                     side = distance(xp, yp, t1)
                     
@@ -196,6 +203,7 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
                     Vabn = dot_product(Vab, n_coll)
                     
                     if (Vabn < 0):
+                        print("collision")
                         # calculate impulse
                         rapn2 = (cross_product(rap, n_coll)[2])*(cross_product(rap, n_coll)[2])
                         J = -(1+e)*(dot_product(Vab, n_coll))/((1/ma)+(1/mb)+(rapn2/IA))
@@ -208,7 +216,7 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
                         waf = (0.0, 0.0, crosstempA)
                         wbf = (0.0, 0.0, crosstempB)
                         
-                        if(t1 == 'A'):
+                        if(t1 == A):
                             VxcmA = Vbf[0]
                             VycmA = Vbf[1]
                             VxcmB = Vaf[0]
@@ -228,10 +236,15 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
                         # positional update for both polygons: later in the code
                         return True
                         break
+                    return False
+                return False
+            return False
+        return False
+    return False
 
 # calculations for movement: 
 
-while (time < 2.0):
+while (time < 0.8):
     # triangle collision detection
     VA = (VxcmA, VycmA)
     VB = (VxcmB, VycmB)
@@ -252,6 +265,7 @@ while (time < 2.0):
             J = -(1+e)*dotVpn/(((1/mA)+crossrn2)/IA)
             VycmA += J/mA
             VycmA = -VycmA
+            wA = list(wA)
             wA[2] += J/IA * crossrn[2]
 
     # calculating and updating the center of mass
@@ -291,6 +305,7 @@ while (time < 2.0):
             J = -(1+e)*dotVpn/(((1/mB)+crossrn2)/IB)
             VycmB += J/mB
             VycmB = -VycmB
+            wB = list(wB)
             wB[2] += J/IB * crossrn[2]
 
     # calculating and updating the center of mass
