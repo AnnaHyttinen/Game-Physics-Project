@@ -160,7 +160,7 @@ def distance(x, y, t): # triangle collision system uses this to find a distance
 
 previousA = None
 previousB = None
-in_count = 0
+
 def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
     global previousA
     global previousB
@@ -171,7 +171,7 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
     global VxcmB
     global VycmB
     global A
-    global in_count
+    print("round starts")
     # going through all sides of t1 for collision with t2
     if (previousA == None or previousB == None):
         if (t1 == A):
@@ -191,15 +191,22 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
             curr_x = i[0]
             curr_y = i[1]
             rii1 = ((curr_x-pre_x), (curr_y-pre_y), 0.0) # defines a side
+            in_count = 0
+            count = 0
             for i in t2: # i is a point of the other triangle
+                print(i)
+                count += 1
+                if(count >= 3):
+                    count = 0
+                    break
                 xp = i[0]
                 yp = i[1]
                 rip = ((xp-pre_x), (yp-pre_y), 0.0) # defines point compared to point of side
                 rii1xrip = cross_product(rii1, rip)
                 if(rii1xrip[2] > 0): 
                     in_count += 1
-                print(in_count)
                 if (in_count == 3):
+                    print("inni")
                     # point is inside the other polygon
                     # find the nearest polygon side i->i+1!
                     for i in t2:
@@ -223,7 +230,7 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
                         Vabn = dot_product(Vab, n_coll)
                     
                         if (Vabn < 0):
-                            #print("collision")
+                            print("collision")
                             # calculate impulse
                             rapn2 = (cross_product(rap, n_coll)[2])*(cross_product(rap, n_coll)[2])
                             J = -(1+e)*(dot_product(Vab, n_coll))/((1/ma)+(1/mb)+(rapn2/IA))
@@ -254,16 +261,15 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
                                 # updated cm velocities
                                 # updated angular velocities
                                 # positional update for both polygons: later in the code
-                            in_count = 0
+
                             return True
                             break
-                in_count = 0
-        return False
+  
     return False
 
 # calculations for movement: 
 
-while (time < 1.5):
+while (time < 1.25):
     # triangle collision detection
     VA = (VxcmA, VycmA)
     VB = (VxcmB, VycmB)
