@@ -33,7 +33,7 @@ r = (0.0, 0.0, 0.0)
 J = 0
 time = 0.0
 g = 9.81
-dt = 0.03
+dt = 0.04
 yA = 1.0 # greek alphabet that looks a bit like y
 yB = 1.5
 wA = [0.0, 0.0, 1.75] # (omega)
@@ -222,35 +222,37 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
                             VycmB = Vbf[1]
                             wA = waf
                             wB = wbf                            
-
+                            
                         # updated cm velocities
                         # updated angular velocities
-                        # positional update for both polygons
+                        # positional update for both polygons: later in the code
+                        return True
                         break
 
 # calculations for movement: 
 
-while (time < 1.0):
-    # triangles colliding together detection
+while (time < 2.0):
+    # triangle collision detection
     VA = (VxcmA, VycmA)
     VB = (VxcmB, VycmB)
     CMA = (cmAx, cmAy)
     CMB = (cmBx, cmBy)
-    collision_triangles(A, B, VA, VB, CMA, CMB, wA, wB, mA, mB)
-    collision_triangles(B, A, VB, VA, CMB, CMA, wB, wA, mB, mA)
+    collA = collision_triangles(A, B, VA, VB, CMA, CMB, wA, wB, mA, mB)
+    collB = collision_triangles(B, A, VB, VA, CMB, CMA, wB, wA, mB, mA)
     
-    # collision detection
-    collision_A(A)
-    if(A_collides == False):
-        VycmA = VycmA - g * dt
-    else:
-        crossrn = cross_product(r, n)
-        crossrn2 = crossrn[2]*crossrn[2]
-        dotVpn = dot_product(Vp, n)
-        J = -(1+e)*dotVpn/(((1/mA)+crossrn2)/IA)
-        VycmA += J/mA
-        VycmA = -VycmA
-        wA[2] += J/IA * crossrn[2]
+    # ground collision detection
+    if(collA!=True and collB!=True):
+        collision_A(A)
+        if(A_collides == False):
+            VycmA = VycmA - g * dt
+        else:
+            crossrn = cross_product(r, n)
+            crossrn2 = crossrn[2]*crossrn[2]
+            dotVpn = dot_product(Vp, n)
+            J = -(1+e)*dotVpn/(((1/mA)+crossrn2)/IA)
+            VycmA += J/mA
+            VycmA = -VycmA
+            wA[2] += J/IA * crossrn[2]
 
     # calculating and updating the center of mass
     cmAx = cmAx + VxcmA * dt
@@ -278,18 +280,18 @@ while (time < 1.0):
     A = (A1, A2, A3, A1)
     
     # Same for triangle B
-    
-    collision_B(B)
-    if(B_collides == False):
-        VycmB = VycmB - g * dt
-    else:
-        crossrn = cross_product(r, n)
-        crossrn2 = crossrn[2]*crossrn[2]
-        dotVpn = dot_product(Vp, n)
-        J = -(1+e)*dotVpn/(((1/mB)+crossrn2)/IB)
-        VycmB += J/mB
-        VycmB = -VycmB
-        wB[2] += J/IB * crossrn[2]
+    if(collA!=True and collB!=True):
+        collision_B(B)
+        if(B_collides == False):
+            VycmB = VycmB - g * dt
+        else:
+            crossrn = cross_product(r, n)
+            crossrn2 = crossrn[2]*crossrn[2]
+            dotVpn = dot_product(Vp, n)
+            J = -(1+e)*dotVpn/(((1/mB)+crossrn2)/IB)
+            VycmB += J/mB
+            VycmB = -VycmB
+            wB[2] += J/IB * crossrn[2]
 
     # calculating and updating the center of mass
     cmBx = cmBx + VxcmB * dt
@@ -316,7 +318,7 @@ while (time < 1.0):
     B3 = (Bx[2], By[2])
     B = (B1, B2, B3, B1)
     
-    # updating values for time and y: 
+    # updating the rest of the values: 
     yA = yA + wA[2] * dt
     yB = yB + wB[2] * dt
     time += dt
