@@ -160,13 +160,9 @@ def distance(x, y, t): # triangle collision system uses this to find a distance
 
 previousA = None
 previousB = None
-pre_pA = None
-pre_pB = None
 def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
     global previousA
     global previousB
-    global pre_pA
-    global pre_pB
     global wA
     global wB
     global VxcmA
@@ -192,23 +188,24 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
                 previousB = i
             curr_x = i[0]
             curr_y = i[1]
-            rii1 = ((curr_x-pre_x), (curr_y-pre_y), 0.0) # does this define a side?
-            print(rii1)
+            rii1 = ((curr_x-pre_x), (curr_y-pre_y), 0.0) # defines a side
             for i in t2: # i is a point of the other triangle
-                if (t1 == A and pre_pA == None):
-                    pre_pA = i
-                elif (t1 == B and pre_pB == None):
-                    pre_pB = i
-                else:
-                    xp = i[0]
-                    yp = i[1]
-                    rip = ((xp-pre_x), (yp-pre_y), 0.0)
-                    pre_p = i
-                    #print(rip)
-                    rii1xrip = cross_product(rii1, rip)
-                    if(rii1xrip[2] > 0): # if a point is inside the other polygon
-                        print("point is found inside")
-                        # find the nearest polygon side i->i+1!
+                in_count = 0
+                xp = i[0]
+                yp = i[1]
+                rip = ((xp-pre_x), (yp-pre_y), 0.0) # defines point compared to point of side
+                print(rip)
+                rii1xrip = cross_product(rii1, rip)
+                if(rii1xrip[2] > 0): 
+                    in_count += 1
+                if (in_count == 4):                   
+                    # point is inside the other polygon
+                    print("point is found inside")
+                    in_count = 0
+                    # find the nearest polygon side i->i+1!
+                    for i in t2:
+                        xp = i[0]
+                        yp = i[1]
                         side = distance(xp, yp, t1)
                     
                         side2x = (side[0])*(side[0])
@@ -234,12 +231,12 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
                             
                             Vaf = ((Va[0] + J/ma * n_coll[0]),(Va[1]) + J/ma * n_coll[1])
                             Vbf = ((Vb[0] + J/mb * n_coll[0]),(Vb[1] + J/mb * n_coll[1]))
-                        
+                            
                             crosstempA = wa[2] - J/IA * cross_product(rap, n_coll)[2]
                             crosstempB = wb[2] + J/IB * cross_product(rbp, n_coll)[2]
                             waf = (0.0, 0.0, crosstempA)
                             wbf = (0.0, 0.0, crosstempB)
-                        
+                            
                             if(t1 == A):
                                 VxcmA = Vbf[0]
                                 VycmA = Vbf[1]
@@ -255,21 +252,18 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
                                 wA = waf
                                 wB = wbf                            
                             
-                        # updated cm velocities
-                        # updated angular velocities
-                        # positional update for both polygons: later in the code
+                                # updated cm velocities
+                                # updated angular velocities
+                                # positional update for both polygons: later in the code
                             return True
                             break
-                        return False
-                    return False
-                return False
-            return False
+
         return False
     return False
 
 # calculations for movement: 
 
-while (time < 0.4):
+while (time < 0.93):
     # triangle collision detection
     VA = (VxcmA, VycmA)
     VB = (VxcmB, VycmB)
