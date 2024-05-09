@@ -158,9 +158,15 @@ def distance(x, y, t): # triangle collision system uses this to find a distance
                 s = (i[0], i[1], 0.0)
     return s
 
-previous = None
+previousA = None
+previousB = None
+pre_pA = None
+pre_pB = None
 def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
-    global previous
+    global previousA
+    global previousB
+    global pre_pA
+    global pre_pB
     global wA
     global wB
     global VxcmA
@@ -168,20 +174,36 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
     global VxcmB
     global VycmB
     # going through all sides of t1 for collision with t2
-    if (previous == None):
-        previous = t1[0] # i in notes, a point of a side
+    if (t1 == A and previousA == None):
+        previousA = t1[0] # i in notes, the previous point of a side
+    elif (t1 == B and previousB == None):
+        previousB = t1[0]
     else:
-        for i in t1: # i is another point of a side
-            pre_x = previous[0]
-            pre_y = previous[1]
+        print("or else")
+        for i in t1: # i is next point of a side
+            if (t1 == A):
+                pre_x = previousA[0]
+                pre_y = previousA[1]
+                previousA = i
+            else:
+                pre_x = previousB[0]
+                pre_y = previousB[1]
+                previousB = i
             curr_x = i[0]
             curr_y = i[1]
             rii1 = ((curr_x-pre_x), (curr_y-pre_y), 0.0)
             for i in t2: # i is a point of other triangle
-                xp = i[0]
-                yp = i[1]
-                rip = ((xp-pre_x), (yp-pre_y), 0.0)
-                rii1xrip = cross_product(rii1, rip)
+                if (t1 == A and pre_pA == None):
+                    pre_pA = i
+                elif (t1 == B and pre_pB == None):
+                    pre_pB = i
+                else:
+                    xp = i[0]
+                    yp = i[1]
+                    rip = ((xp-pre_x), (yp-pre_y), 0.0)
+                    pre_p = i
+                    print(rip)
+                    rii1xrip = cross_product(rii1, rip)
                 if(rii1xrip[2] > 0): # if a point is inside the other polygon
                     print("point is found inside")
                     # find the nearest polygon side i->i+1!
@@ -244,7 +266,7 @@ def collision_triangles(t1, t2, Vb, Va, B, A, wb, wa, mb, ma):
 
 # calculations for movement: 
 
-while (time < 0.8):
+while (time < 0.4):
     # triangle collision detection
     VA = (VxcmA, VycmA)
     VB = (VxcmB, VycmB)
