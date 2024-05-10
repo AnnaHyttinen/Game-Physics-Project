@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 import math
+from Triangle import Triangle, Point, CenterOfMass
 
 # reference points introduced
 
@@ -77,6 +78,12 @@ Bx = [p[0] for p in B]
 By = [p[1] for p in B]
 cornersBx = [Bx]
 cornersBy = [By]
+
+C1 = Point(0.2, 0.1)
+C2 = Point(-0.1, 0.1)
+C3 = Point(-0.1, -0.2)
+CCm = CenterOfMass(0.0, 2.0, 2.0, 4.0)
+C = Triangle(CCm, [C1, C2, C3], yA, wA, mA, IA)
 
 # Inserting functions
 
