@@ -158,6 +158,8 @@ def distance(x, y, t): # triangle collision system uses this to find a distance
 
 previousA = None
 previousB = None
+in_count = 0
+count = 0
 
 def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
     global previousA
@@ -169,100 +171,114 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
     global VxcmB
     global VycmB
     global A
-    print("round starts")
-    # going through all sides of t1 for collision with t2
-    if (previousA == None or previousB == None):
-        if (t1 == A):
-            previousA = t1[0] # holds the previous point of a side
-        else:
-            previousB = t1[0]
-    else:
-        for i in t1: # next point of a side
-            if (t1 == A):
-                pre_x = previousA[0]
-                pre_y = previousA[1]
-                previousA = i
-            else:
-                pre_x = previousB[0]
-                pre_y = previousB[1]
-                previousB = i
-            curr_x = i[0]
-            curr_y = i[1]
-            rii1 = ((curr_x-pre_x), (curr_y-pre_y), 0.0) # defines a side
-            in_count = 0
+    global in_count
+    global count
+    
+    print("hajime")
+    
+    # going through all points of t2 against the walls of t1
+    
+    for i in t2: # i is a point of a triangle
+        print(i)
+        count += 1
+        if(count >= 3):
             count = 0
-            for i in t2: # i is a point of the other triangle
-                print(i)
-                count += 1
-                if(count >= 3):
-                    count = 0
-                    break
+            break
+        
+        xp = i[0]
+        yp = i[1]
+        pre_x = None
+        pre_y = None
+        curr_x = None
+        curr_y = None
+        
+        if (previousA == None or previousB == None):
+            if (t1 == A):
+                previousA = t1[0] # holds the first point of a side
+            else:
+                previousB = t1[0]
+
+        else:
+            for i in t1: # holds the second point of a side
+                if (t1 == A):
+                    pre_x = previousA[0]
+                    pre_y = previousA[1]
+                    previousA = i
+                else:
+                    pre_x = previousB[0]
+                    pre_y = previousB[1]
+                    previousB = i
+                curr_x = i[0]
+                curr_y = i[1]
+        
+        rii1xrip = None
+        
+        if (pre_x != None and pre_y != None):           
+            rip = ((xp-pre_x), (yp-pre_y), 0.0) # point compared to first point of side
+            rii1 = ((curr_x-pre_x), (curr_y-pre_y), 0.0) # defines a side
+            rii1xrip = cross_product(rii1, rip)
+
+        if(rii1xrip != None and rii1xrip[2] > 0): 
+            in_count += 1
+            
+        if (in_count == 3):
+            # point is inside the other polygon
+            # finding the nearest polygon side i->i+1
+            for i in t2:
                 xp = i[0]
                 yp = i[1]
-                rip = ((xp-pre_x), (yp-pre_y), 0.0) # defines point compared to point of side
-                rii1xrip = cross_product(rii1, rip)
-                if(rii1xrip[2] > 0): 
-                    in_count += 1
-                if (in_count == 3):
-                    print("inni")
-                    # point is inside the other polygon
-                    # finding the nearest polygon side i->i+1
-                    for i in t2:
-                        xp = i[0]
-                        yp = i[1]
-                        side = distance(xp, yp, t1)
+                side = distance(xp, yp, t1)
                     
-                        side2x = (side[0])*(side[0])
-                        side2y = (side[1])*(side[1])
-                        upper = cross_product(side, k)
-                        lower = math.sqrt(side2x+side2y)
-                        n_coll = ((upper[0]/lower), (upper[1]/lower), (upper[2]/lower))
+                side2x = (side[0])*(side[0])
+                side2y = (side[1])*(side[1])
+                upper = cross_product(side, k)
+                lower = math.sqrt(side2x+side2y)
+                n_coll = ((upper[0]/lower), (upper[1]/lower), (upper[2]/lower))
                     
-                        # point velocities of both polygons at P
-                        rap = r_calculator(i, cA)
-                        rbp = r_calculator(i, cB)
+                # point velocities of both polygons at P
+                rap = r_calculator(i, cA)
+                rbp = r_calculator(i, cB)
 
-                        Vap = (Va[0] + cross_product(wa, rap)[0])+(Va[1] + cross_product(wa, rap)[1])
-                        Vbp = (Vb[0] + cross_product(wb, rbp)[0])+(Vb[1] + cross_product(wb, rbp)[1])
-                        Vab = ((Vap - Vbp), 0.0, 0.0)
-                        Vabn = dot_product(Vab, n_coll)
+                Vap = (Va[0] + cross_product(wa, rap)[0])+(Va[1] + cross_product(wa, rap)[1])
+                Vbp = (Vb[0] + cross_product(wb, rbp)[0])+(Vb[1] + cross_product(wb, rbp)[1])
+                Vab = ((Vap - Vbp), 0.0, 0.0)
+                Vabn = dot_product(Vab, n_coll)
                     
-                        if (Vabn < 0):
-                            print("collision")
-                            # calculate impulse
-                            rapn2 = (cross_product(rap, n_coll)[2])*(cross_product(rap, n_coll)[2])
-                            J = -(1+e)*(dot_product(Vab, n_coll))/((1/ma)+(1/mb)+(rapn2/IA))
+                if (Vabn < 0):
+                    print("collision detected")
+                    # calculate impulse
+                    rapn2 = (cross_product(rap, n_coll)[2])*(cross_product(rap, n_coll)[2])
+                    J = -(1+e)*(dot_product(Vab, n_coll))/((1/ma)+(1/mb)+(rapn2/IA))
                             
-                            Vaf = ((Va[0] + J/ma * n_coll[0]),(Va[1]) + J/ma * n_coll[1])
-                            Vbf = ((Vb[0] + J/mb * n_coll[0]),(Vb[1] + J/mb * n_coll[1]))
+                    Vaf = ((Va[0] + J/ma * n_coll[0]),(Va[1]) + J/ma * n_coll[1])
+                    Vbf = ((Vb[0] + J/mb * n_coll[0]),(Vb[1] + J/mb * n_coll[1]))
                             
-                            crosstempA = wa[2] - J/IA * cross_product(rap, n_coll)[2]
-                            crosstempB = wb[2] + J/IB * cross_product(rbp, n_coll)[2]
-                            waf = (0.0, 0.0, crosstempA)
-                            wbf = (0.0, 0.0, crosstempB)
+                    crosstempA = wa[2] - J/IA * cross_product(rap, n_coll)[2]
+                    crosstempB = wb[2] + J/IB * cross_product(rbp, n_coll)[2]
+                    waf = (0.0, 0.0, crosstempA)
+                    wbf = (0.0, 0.0, crosstempB)
                             
-                            if(t1 == A):
-                                VxcmA = Vbf[0]
-                                VycmA = Vbf[1]
-                                VxcmB = Vaf[0]
-                                VycmB = Vaf[1]
-                                wA = wbf
-                                wB = waf
-                            else:
-                                VxcmA = Vaf[0]
-                                VycmA = Vaf[1]
-                                VxcmB = Vbf[0]
-                                VycmB = Vbf[1]
-                                wA = waf
-                                wB = wbf                            
+                    if(t1 == A):
+                        VxcmA = Vbf[0]
+                        VycmA = Vbf[1]
+                        VxcmB = Vaf[0]
+                        VycmB = Vaf[1]
+                        wA = wbf
+                        wB = waf
+                    else:
+                        VxcmA = Vaf[0]
+                        VycmA = Vaf[1]
+                        VxcmB = Vbf[0]
+                        VycmB = Vbf[1]
+                        wA = waf
+                        wB = wbf                            
                             
-                                # updated cm velocities
-                                # updated angular velocities
-                                # positional update for both polygons: later in the code
+                        # updated cm velocities
+                        # updated angular velocities
+                        # positional update for both polygons: later in the code
 
-                            return True
-                            break
-
+                    return True
+                    break
 
 # calculations for movement: 
 
