@@ -14,8 +14,6 @@ p2Bi = [-0.25, 0.25]
 p3Bi = [0.0, -0.25]
 
 cmi = (0.0, 0.0)
-cmix = 0.0 
-cmiy = 0.0
 
 # starting points for centers of mass introduced (various ways)
 
@@ -139,7 +137,7 @@ def collision_B(triangle):
             B_collides = False
 
 def distance(x, y, t): # triangle collision system uses this to find a distance
-    dist = 0.0
+    dist = 100
     s = None
     previ = None
     for i in t:
@@ -153,7 +151,7 @@ def distance(x, y, t): # triangle collision system uses this to find a distance
             if(down == 0):
                 down = 0.0000000001
             dist0 = abs(up/down)
-            if (dist0 > dist):
+            if (dist0 < dist):
                 dist = dist0
                 s = (i[0], i[1], 0.0)
     return s
@@ -208,7 +206,7 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
                 if (in_count == 3):
                     print("inni")
                     # point is inside the other polygon
-                    # find the nearest polygon side i->i+1!
+                    # finding the nearest polygon side i->i+1
                     for i in t2:
                         xp = i[0]
                         yp = i[1]
@@ -264,21 +262,25 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
 
                             return True
                             break
-  
-    return False
+
 
 # calculations for movement: 
 
-while (time < 1.25):
-    # triangle collision detection
-    VA = (VxcmA, VycmA)
-    VB = (VxcmB, VycmB)
-    CMA = (cmAx, cmAy)
-    CMB = (cmBx, cmBy)
-    collA = collision_triangles(A, B, VA, VB, cmA, cmB, wA, wB, mA, mB)
-    collB = collision_triangles(B, A, VB, VA, cmB, cmA, wB, wA, mB, mA)
+while (time < 0.95):
+    
+    collA = False
+    collB = False
+    
+    # triangle collision detection only if the triangles are near to each other
+    if(abs(abs(cmAx)-abs(cmBx))<0.5 and abs(abs(cmAy)-abs(cmBy))<0.5):
+        VA = (VxcmA, VycmA)
+        VB = (VxcmB, VycmB)
+        CMA = (cmAx, cmAy)
+        CMB = (cmBx, cmBy)
+        collA = collision_triangles(A, B, VA, VB, cmA, cmB, wA, wB, mA, mB)
+        collB = collision_triangles(B, A, VB, VA, cmB, cmA, wB, wA, mB, mA)
 
-    # ground collision detection
+    # ground collision detection only if the previous collisions did not happen
     if(collA!=True and collB!=True):
         collision_A(A)
         if(A_collides == False):
