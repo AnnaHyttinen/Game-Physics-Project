@@ -174,12 +174,9 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
     global in_count
     global count
     
-    print("hajime")
-    
     # going through all points of t2 against the walls of t1
     
     for i in t2: # i is a point of a triangle
-        print(i)
         count += 1
         if(count >= 3):
             count = 0
@@ -259,17 +256,17 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
                     wbf = (0.0, 0.0, crosstempB)
                             
                     if(t1 == A):
-                        VxcmA = Vbf[0]
-                        VycmA = Vbf[1]
-                        VxcmB = Vaf[0]
-                        VycmB = Vaf[1]
-                        wA = wbf
-                        wB = waf
-                    else:
                         VxcmA = Vaf[0]
                         VycmA = Vaf[1]
                         VxcmB = Vbf[0]
                         VycmB = Vbf[1]
+                        wA = wbf
+                        wB = waf
+                    else:
+                        VxcmA = Vbf[0]
+                        VycmA = Vbf[1]
+                        VxcmB = Vaf[0]
+                        VycmB = Vaf[1]
                         wA = waf
                         wB = wbf                            
                             
@@ -279,10 +276,11 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
 
                     return True
                     break
+    return False
 
 # calculations for movement: 
 
-while (time < 0.95):
+while (time < 3.0):
     
     collA = False
     collB = False
@@ -330,7 +328,7 @@ while (time < 0.95):
     
     plt.plot(Ax, Ay)
     
-    # A gets updated for the collision detection
+    # A gets updated
     A1 = (Ax[0], Ay[0])
     A2 = (Ax[1], Ay[1])
     A3 = (Ax[2], Ay[2])
@@ -350,7 +348,7 @@ while (time < 0.95):
             VycmB = -VycmB
             wB = list(wB)
             wB[2] += J/IB * crossrn[2]
-
+            
     # calculating and updating the center of mass
     cmBx = cmBx + VxcmB * dt
     cmBy = cmBy + VycmB * dt
@@ -370,7 +368,7 @@ while (time < 0.95):
     
     plt.plot(Bx, By)
     
-    # B gets updated for the collision detection
+    # B gets updated
     B1 = (Bx[0], By[0])
     B2 = (Bx[1], By[1])
     B3 = (Bx[2], By[2])
