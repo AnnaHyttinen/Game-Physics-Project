@@ -79,17 +79,15 @@ p1Bi = [0.25, 0.0]
 p2Bi = [-0.25, 0.25]
 p3Bi = [0.0, -0.25]
 
-cmi = (0.0, 0.0)
-
 # starting points for centers of mass introduced (various ways)
 
-cmA = (0.0, 2.0)
 cmAx = 0.0 
 cmAy = 2.0
+cmA = (cmAx, cmAy)
 
-cmB = (4.0, 3.0)
 cmBx = 4.0 
 cmBy = 3.0
+cmB = (cmBx, cmBy)
 
 # general variables needed for calculations
 
@@ -148,13 +146,13 @@ CCm = CenterOfMass(0.0, 2.0, 2.0, 4.0)
 C1 = Point(0.2, 0.3, CCm.x, CCm.y)
 C2 = Point(-0.1, 0.1, CCm.x, CCm.y)
 C3 = Point(-0.1, -0.2, CCm.x, CCm.y)
-C = Triangle(CCm, [C1, C2, C3], yA, wA, mA, IA)
+C = Triangle(CCm, [C1, C2, C3], yA, wA, mA, IA) #copy of A
 
 DCm = CenterOfMass(4.0,3.0, -2.0,3.0)
 D1 = Point(0.25, 0.0, DCm.x, DCm.y)
 D2 = Point(-0.25, 0.25, DCm.x, DCm.y)
 D3 = Point(0, -0.25, DCm.x, DCm.y)
-D = Triangle(DCm, [D1, D2, D3], yB, wB, mB, IB)
+D = Triangle(DCm, [D1, D2, D3], yB, wB, mB, IB) #copy of B
 
 # Inserting functions
 
