@@ -2,9 +2,6 @@
 
 import matplotlib.pyplot as plt
 import math
-#from Triangle import Triangle, Point, CenterOfMass
-
-plt.figure(figsize=(20, 20))
 
 class Triangle:
     def __init__(self, cm, points, angDispl, angVel, mass, I):
@@ -14,14 +11,12 @@ class Triangle:
         self.angVel = angVel
         self.mass = mass
         self.I = I
-        for point in self.points:
-            point.printPoint()
-        self.cm.printPoint()
+        #self.printInformation()
     def updateCorners(self):
         for point in self.points:
             point = point.updatePoint(self.angDispl, self.cm)
     def updateCM(self, dt):
-        self.cm.updatePoint(dt) #works
+        self.cm.updatePoint(dt)
     def updateCMVelocity(self, g, dt):
         self.cm.updateNoCollisionVelocity(g, dt)
     def getPointsX(self):
@@ -32,6 +27,12 @@ class Triangle:
         self.cm.printPoint()
         for point in self.points:
             point.printPoint()
+    #def checkCollision(self, triangle):
+        #collA = False
+        #collB = False
+        #if(abs(abs(self.cm.x)-abs(triangle.cm.x))<0.5 and abs(abs(self.cm.y)-abs(triangle.cm.y))<0.5):
+            #collA = collision_triangles(self, triangle, (self.cm.vx, self.cm.vy), (triangle.cm.vx, triangle.cm.vy), (self.cm.x, self.cm.y), (triangle.cm.x, triangle.cm.y),self.angVel, triangle.angVel, self.mass,triangle.mass)
+            #collA = collision_triangles(triangle,self, (triangle.cm.vx, triangle.cm.vy), (self.cm.vx, self.cm.vy), (triangle.cm.x, triangle.cm.y), (self.cm.x, self.cm.y), triangle.angVel, self.angVel, triangle.mass, self.mass)
 
 class Point:
     def __init__(self, x, y,cmx, cmy):
@@ -46,8 +47,6 @@ class Point:
         self.y = newry + cm.y
         self.rx = newrx
         self.ry = newry
-        #self.x = self.x*math.cos(angDispl) - self.y*math.sin(angDispl)+ cm.x
-        #self.y = self.x*math.sin(angDispl) + self.y*math.cos(angDispl)+ cm.y
         return self    
     def printPoint(self):
         print(f"Location: {self.x}, {self.y}")
@@ -56,7 +55,8 @@ class Point:
     
 class CenterOfMass(Point):
     def __init__(self,x,y, vx, vy):
-        super().__init__(x,y,x,y)
+        self.x = x
+        self.y = y
         self.vx = vx
         self.vy = vy
     def printPoint(self):
@@ -68,7 +68,6 @@ class CenterOfMass(Point):
         return self
     def updateNoCollisionVelocity(self, g, dt):
         self.vy = self.vy - g * dt
-        #print(f"Velocity: {self.vx}i + {self.vy}j")
 
 # reference points introduced, relative to cm
 
@@ -146,11 +145,16 @@ cornersBx = [Bx]
 cornersBy = [By]
 
 CCm = CenterOfMass(0.0, 2.0, 2.0, 4.0)
-C1 = Point(0.2, 0.3, 0.0, 2.0)
-C2 = Point(-0.1, 0.1, 0.0, 2.0)
-C3 = Point(-0.1, -0.2, 0.0, 2.0)
+C1 = Point(0.2, 0.3, CCm.x, CCm.y)
+C2 = Point(-0.1, 0.1, CCm.x, CCm.y)
+C3 = Point(-0.1, -0.2, CCm.x, CCm.y)
 C = Triangle(CCm, [C1, C2, C3], yA, wA, mA, IA)
 
+DCm = CenterOfMass(4.0,3.0, -2.0,3.0)
+D1 = Point(0.25, 0.0, DCm.x, DCm.y)
+D2 = Point(-0.25, 0.25, DCm.x, DCm.y)
+D3 = Point(0, -0.25, DCm.x, DCm.y)
+D = Triangle(DCm, [D1, D2, D3], yB, wB, mB, IB)
 
 # Inserting functions
 
@@ -357,7 +361,6 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
 while (time < 3.0):
     collA = False
     collB = False
-    
     # triangle collision detection only if the triangles are near to each other
     if(abs(abs(cmAx)-abs(cmBx))<0.5 and abs(abs(cmAy)-abs(cmBy))<0.5):
         VA = (VxcmA, VycmA)
@@ -381,7 +384,6 @@ while (time < 3.0):
             VycmA = -VycmA
             wA = list(wA)
             wA[2] += J/IA * crossrn[2]
-    C.updateCMVelocity(g, dt)
 
     # calculating and updating the center of mass
     cmAx = cmAx + VxcmA * dt
@@ -409,12 +411,22 @@ while (time < 3.0):
     A2 = (Ax[1], Ay[1])
     A3 = (Ax[2], Ay[2])
     A = (A1, A2, A3, A1)
-        
-    C.updateCM(dt) #works
+    
+
+    #Triangle class triangles    
+    C.updateCMVelocity(g, dt)
+    C.updateCM(dt)
     C.updateCorners()
     CX = C.getPointsX()
     CY = C.getPointsY()
-    plt.plot(CX,CY)
+    #plt.plot(CX,CY) #commented out for clarity
+    
+    D.updateCMVelocity(g, dt)
+    D.updateCM(dt)
+    D.updateCorners()
+    DX = D.getPointsX()
+    DY = D.getPointsY()
+    #plt.plot(DX,DY) #commented out for clarity
     
     # Same for triangle B
     if(collA!=True and collB!=True):
@@ -460,7 +472,7 @@ while (time < 3.0):
     yA = yA + wA[2] * dt
     yB = yB + wB[2] * dt
     time += dt
-    
+
 # Showing the result
 plt.gca().set_aspect('equal')
 plt.show()
