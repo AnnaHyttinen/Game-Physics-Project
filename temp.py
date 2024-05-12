@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import math
 #from Triangle import Triangle, Point, CenterOfMass
 
+plt.figure(figsize=(20, 20))
+
 class Triangle:
     def __init__(self, cm, points, angDispl, angVel, mass, I):
         self.cm = cm
@@ -12,44 +14,40 @@ class Triangle:
         self.angVel = angVel
         self.mass = mass
         self.I = I
-        print(f"angDispl = {angDispl}, angVel = {angVel}")
         for point in self.points:
             point.printPoint()
         self.cm.printPoint()
     def updateCorners(self):
         for point in self.points:
-            point.updatePoint(self.angDispl, self.cm)
+            point = point.updatePoint(self.angDispl, self.cm)
     def updateCM(self, dt):
-        self.cm.updatePoint(dt)
+        self.cm.updatePoint(dt) #works
     def updateCMVelocity(self, g, dt):
         self.cm.updateNoCollisionVelocity(g, dt)
-    def plotPoints(self):
-        pointsx = [self.points[0].x,self.points[1].x,self.points[2].x,self.points[0].x]
-        pointsy = [self.points[0].y,self.points[1].y,self.points[2].y,self.points[0].y]
-        plt.plot(pointsx, pointsy)    
-        print("X: ", pointsx)
-        print("Y: ", pointsy)
     def getPointsX(self):
-        #print(self.points[0].x)
         return (self.points[0].x,self.points[1].x,self.points[2].x,self.points[0].x)
     def getPointsY(self):
         return (self.points[0].y,self.points[1].y,self.points[2].y,self.points[0].y)
-    def getSideSizes(self):
-        allsides = 0
-        allsides = math.sqrt(abs((self.points[0].x - self.points[1].x)**2 + (self.points[0].y - self.points[1].y)**2))
-        print(allsides)
+    def printInformation(self):
+        self.cm.printPoint()
+        for point in self.points:
+            point.printPoint()
 
 class Point:
-    def __init__(self, x, y):
-        self.x = x 
-        self.y = y
+    def __init__(self, x, y,cmx, cmy):
+        self.rx = x
+        self.ry = y
+        self.x = x + cmx
+        self.y = y + cmy
     def updatePoint(self, angDispl, cm):
-        self.x = self.x - cm.x
-        self.y = self.y - cm.y
-        self.x = self.x*math.cos(angDispl) - self.y*math.sin(angDispl)
-        self.y = self.x*math.sin(angDispl) + self.y*math.cos(angDispl)
-        self.x = self.x + cm.x
-        self.y = self.y + cm.y
+        newrx = self.rx*math.cos(angDispl) - self.ry*math.sin(angDispl)
+        newry = self.rx*math.sin(angDispl) + self.ry*math.cos(angDispl)
+        self.x = newrx + cm.x
+        self.y = newry + cm.y
+        self.rx = newrx
+        self.ry = newry
+        #self.x = self.x*math.cos(angDispl) - self.y*math.sin(angDispl)+ cm.x
+        #self.y = self.x*math.sin(angDispl) + self.y*math.cos(angDispl)+ cm.y
         return self    
     def printPoint(self):
         print(f"Location: {self.x}, {self.y}")
@@ -58,7 +56,7 @@ class Point:
     
 class CenterOfMass(Point):
     def __init__(self,x,y, vx, vy):
-        super().__init__(x,y)
+        super().__init__(x,y,x,y)
         self.vx = vx
         self.vy = vy
     def printPoint(self):
@@ -67,12 +65,12 @@ class CenterOfMass(Point):
     def updatePoint(self, dt):
         self.x = self.x + self.vx * dt
         self.y = self.y + self.vy * dt
-        #self.printPoint()
         return self
     def updateNoCollisionVelocity(self, g, dt):
         self.vy = self.vy - g * dt
+        #print(f"Velocity: {self.vx}i + {self.vy}j")
 
-# reference points introduced
+# reference points introduced, relative to cm
 
 p1Ai = [0.2, 0.1]
 p2Ai = [-0.1, 0.1]
@@ -147,11 +145,12 @@ By = [p[1] for p in B]
 cornersBx = [Bx]
 cornersBy = [By]
 
-C1 = Point(0.2, 0.3)
-C2 = Point(-0.1, 0.3)
-C3 = Point(-0.1, 0.1)
 CCm = CenterOfMass(0.0, 2.0, 2.0, 4.0)
+C1 = Point(0.2, 0.3, 0.0, 2.0)
+C2 = Point(-0.1, 0.1, 0.0, 2.0)
+C3 = Point(-0.1, -0.2, 0.0, 2.0)
 C = Triangle(CCm, [C1, C2, C3], yA, wA, mA, IA)
+
 
 # Inserting functions
 
@@ -356,7 +355,6 @@ def collision_triangles(t1, t2, Vb, Va, cB, cA, wb, wa, mb, ma):
 # calculations for movement: 
 
 while (time < 3.0):
-    
     collA = False
     collB = False
     
@@ -404,21 +402,19 @@ while (time < 3.0):
     Ay[3] = Ay[0]
     
     
-    #plt.plot(Ax, Ay)
+    plt.plot(Ax, Ay)
     
     # A gets updated
     A1 = (Ax[0], Ay[0])
     A2 = (Ax[1], Ay[1])
     A3 = (Ax[2], Ay[2])
     A = (A1, A2, A3, A1)
-    
-    C.updateCM(dt)
+        
+    C.updateCM(dt) #works
     C.updateCorners()
-    C.cm.printPoint()
     CX = C.getPointsX()
     CY = C.getPointsY()
-    #C.getSideSizes()
-    plt.plot(CX, CY) 
+    plt.plot(CX,CY)
     
     # Same for triangle B
     if(collA!=True and collB!=True):
@@ -452,7 +448,7 @@ while (time < 3.0):
     By[2] = p3Bi[0]*math.sin(yB) + p3Bi[1]*math.cos(yB) + cmBy
     By[3] = By[0]
     
-    #plt.plot(Bx, By)
+    plt.plot(Bx, By)
     
     # B gets updated
     B1 = (Bx[0], By[0])
@@ -464,7 +460,7 @@ while (time < 3.0):
     yA = yA + wA[2] * dt
     yB = yB + wB[2] * dt
     time += dt
-
+    
 # Showing the result
 plt.gca().set_aspect('equal')
 plt.show()
